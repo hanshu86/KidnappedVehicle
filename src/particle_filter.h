@@ -119,7 +119,17 @@ class ParticleFilter {
   bool is_initialized;
   
   // Vector of weights of all particles
-  std::vector<double> weights; 
+  std::vector<double> weights;
+
+  // new x position aftre updating with velocity and yaw rate
+  double getPredictedX(Particle particle, double delta_t,  double velocity, double yaw_rate);
+
+  // new y position aftre updating with velocity and yaw rate
+  double getPredictedY(Particle particle, double delta_t, double velocity, double yaw_rate);
+
+  // new theta position aftre updating with velocity and yaw rate
+  double getPredictedTheta(Particle particle, double delta_t, double velocity, double yaw_rate);
+
 };
 
 #endif  // PARTICLE_FILTER_H_

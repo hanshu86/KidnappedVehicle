@@ -20,6 +20,7 @@
 
 using std::string;
 using std::vector;
+using std::normal_distribution;
 
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   /**
@@ -30,8 +31,34 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 0;  // TODO: Set the number of particles
+  num_particles = 1000;  // Set the number of particles to 1000
+  std::default_random_engine gen;
 
+  //Create Gaussian (normal) distribution
+  normal_distribution<double> dist_x(x,std[0]);// for x
+  normal_distribution<double> dist_y(y,std[1]);// for y
+  normal_distribution<double> dist_theta(theta,std[2]);// for theta
+
+  //crete particles and add it to vector
+  for (int i = 0; i < num_particles; i++) {
+
+    double sample_x, sample_y, sample_theta;
+
+    sample_x = dist_x(gen);
+    sample_y = dist_y(gen);
+    sample_theta = dist_theta(gen);
+
+    //Push back new particle created with default constructor
+    particles.push_back(Particle());
+    //modify it with correct value
+    particles[i].id = i;
+    particles[i].x = sample_x;
+    particles[i].y = sample_y;
+    particles[i].theta = sample_theta;
+    particles[i].weight = 1;
+  }
+
+  is_initialized = true;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
@@ -43,6 +70,29 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
+  std::default_random_engine gen;
+
+  for (int i = 0; i < num_particles; i++) {
+    //Add measurement
+    double x_f = getPredictedX(particles[i], delta_t, velocity, yaw_rate);
+    double y_f = getPredictedY(particles[i], delta_t, velocity,  yaw_rate);
+    double theta_f = getPredictedTheta(particles[i], delta_t, velocity, yaw_rate);
+    
+    //Add random gaussian noise
+    normal_distribution<double> dist_x(x_f,std[0]);// for x
+    normal_distribution<double> dist_y(y_f,std[1]);// for y
+    normal_distribution<double> dist_theta(theta_f,std[2]);// for theta
+
+    double sample_x, sample_y, sample_theta;
+
+    noise_x = dist_x(gen);
+    noise_y = dist_y(gen);
+    noise_theta = dist_theta(gen);
+
+    particles[i].x = noise_x;
+    particles[i].y = noise_y;
+    particles[i].theta = noise_theta;
+  }
 
 }
 
@@ -126,3 +176,28 @@ string ParticleFilter::getSenseCoord(Particle best, string coord) {
   s = s.substr(0, s.length()-1);  // get rid of the trailing space
   return s;
 }
+
+double ParticleFilter::getPredictedX(Particle particle, double delta_t,  double velocity, double yaw_rate) {
+  double x_new = 0;
+
+  x_new = particle.x + (velocity / yaw_rate) * (sin(particle.theta + (yaw_rate * delta_t)) - sin(particle.theta));
+
+  return x_new;
+}
+
+double ParticleFilter::getPredictedY(Particle particle, double delta_t,  double velocity, double yaw_rate) {
+  double y_new = 0;
+
+  y_new = particle.y + (velocity / yaw_rate) * (cos(particle.theta) - cos(particle.theta + (yaw_rate * delta_t)));
+
+  return y_new;
+}
+
+double ParticleFilter::getPredictedTheta(Particle particle, double delta_t,  double velocity, double yaw_rate) {
+  double theta_new = 0;
+
+  theta_new = particle.theta + (yaw_rate * delta_t);
+
+  return theta_new;
+}
+
