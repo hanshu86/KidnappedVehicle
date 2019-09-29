@@ -130,6 +130,9 @@ class ParticleFilter {
   // new theta position aftre updating with velocity and yaw rate
   double getPredictedTheta(Particle particle, double delta_t, double velocity, double yaw_rate);
 
+  std::vector<double> transformedObservation(Particle particle, double x_obs, double y_obs);
+
+  double multiv_prob(double sig_x, double sig_y, double x_obs, double y_obs, double mu_x, double mu_y);
 };
 
 #endif  // PARTICLE_FILTER_H_
