@@ -32,7 +32,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 10;  // Set the number of particles to 1000
+  num_particles = 10;  // Set the number of particles
   std::default_random_engine gen;
 
   //Create Gaussian (normal) distribution
@@ -60,7 +60,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   }
 
   is_initialized = true;
-  std::cout << "Particle Vector Size is: " << particles.size() << std::endl;
+  // std::cout << "Particle Vector Size is: " << particles.size() << std::endl;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
@@ -234,10 +234,11 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
   } // each particle loop
 
   // std::cout << "total weight sum: " << weight_normalizer << std::endl;
-  double newSum = 0;
+  double newSum = 0;//for debugging purpose
   weights.clear();
   //normalize particle weight so that they will be in range 0 to 1
   for (int i = 0; i < num_particles; i++) {
+    //FIXME: Normalizing weight some how gives higher error??
     // particles[i].weight /= weight_normalizer;
     newSum += particles[i].weight;
     weights.push_back(particles[i].weight);
