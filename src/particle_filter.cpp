@@ -227,13 +227,13 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       // std::cout << "mu_x: " << mu_x << std::endl;
       // std::cout << "mu_y: " << mu_y  << std::endl;
       // std::cout << "nearest landmark " << nearest_landmark << std::endl;
-      std::cout << "weight_obs: "<< obsWeight << std::endl;
+      // std::cout << "weight_obs: "<< obsWeight << std::endl;
     } // weight update loop
     // std::cout << "particle weight: " << particles[i].weight << std::endl;
     weight_normalizer += particles[i].weight;
   } // each particle loop
 
-  std::cout << "total weight sum: " << weight_normalizer << std::endl;
+  // std::cout << "total weight sum: " << weight_normalizer << std::endl;
   double newSum = 0;
   weights.clear();
   //normalize particle weight so that they will be in range 0 to 1
@@ -242,7 +242,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     newSum += particles[i].weight;
     weights.push_back(particles[i].weight);
   } //weight normalizer loop
-  std::cout << "total new weight sum: " << newSum << std::endl;
+  // std::cout << "total new weight sum: " << newSum << std::endl;
 }
 
 void ParticleFilter::resample() {
@@ -252,6 +252,7 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
+  //This code is mostly converted from Sebastian Python code (from class) to C++
   // Vector for new particles
   vector<Particle> new_particles (num_particles);
   std::default_random_engine gen;
@@ -295,9 +296,9 @@ void ParticleFilter::resample() {
   particles = new_particles;
 
   // print particles to see what all particles has been resamples
-  for (int i = 0; i < num_particles; i++) {
-    std::cout << "X: " << particles[i].x << "Y: " << particles[i].y << std::endl;
-  }
+  // for (int i = 0; i < num_particles; i++) {
+  //   std::cout << "X: " << particles[i].x << "Y: " << particles[i].y << std::endl;
+  // }
 }
 
 void ParticleFilter::SetAssociations(Particle& particle, 
@@ -309,11 +310,6 @@ void ParticleFilter::SetAssociations(Particle& particle,
   // associations: The landmark id that goes along with each listed association
   // sense_x: the associations x mapping already converted to world coordinates
   // sense_y: the associations y mapping already converted to world coordinates
-
-  particle.associations.clear();
-  particle.sense_x.clear();
-  particle.sense_y.clear();
-
   particle.associations= associations;
   particle.sense_x = sense_x;
   particle.sense_y = sense_y;
